@@ -5,90 +5,168 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الصفحة الرئيسية</title>
 <style>
-body{background:#121212;color:white;font-family:"Tajawal",sans-serif;margin:0;padding:20px;}
-.top-info{text-align:center;margin-bottom:15px;background:#1e1e1e;padding:10px;border-radius:10px;border:1px solid #ff9800;font-size:18px;color:#ff9800;}
-.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:20px;}
-.subject{background:#1e1e1e;padding:15px;border-radius:12px;text-align:center;transition:.3s;cursor:pointer;border:1px solid #ff9800;}
-.subject:hover{transform:scale(1.05);background:#252525;}
-.subject img{width:100%;height:130px;object-fit:cover;border-radius:10px;}
-.subject-name{margin-top:10px;font-size:18px;color:#ff9800;}
-.contact-container{max-width:450px;margin:30px auto;background:#1e1e1e;padding:20px;border-radius:12px;border:1px solid #ff9800;}
-.contact-container img{width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:15px;border:1px solid #ff9800;}
-.contact-container input,.contact-container textarea{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:none;background:#2a2a2a;color:white;}
-.contact-container button{width:100%;background:#ff9800;border:none;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer;}
+body {
+    font-family: "Tajawal", sans-serif;
+    background: #121212;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+h1, h2 {
+    text-align: center;
+    color: #ff9800;
+    margin-bottom: 20px;
+}
+.top-info {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #1e1e1e;
+    border: 1px solid #ff9800;
+    font-size: 18px;
+    color: #ff9800;
+}
+.subjects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+.subject {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    transition: .3s;
+    cursor: pointer;
+    border: 1px solid #ff9800;
+}
+.subject:hover {
+    transform: scale(1.05);
+    background: #252525;
+}
+.subject img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.subject-name {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #ff9800;
+}
+.contact-container {
+    max-width: 450px;
+    margin: 30px auto;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #ff9800;
+}
+.contact-container img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ff9800;
+}
+.contact-container input,
+.contact-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #2a2a2a;
+    color: white;
+}
+.contact-container button {
+    width: 100%;
+    background: #ff9800;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
 
-<div class="top-info" id="studentInfo"></div>
+<div class="top-info" id="studentInfo">مرحبا بك</div>
 
-<h1 style="text-align:center;color:#ff9800;">مواد الصف الثالث الثانوي 2025 - 2026</h1>
+<h1>مواد الصف الثالث الثانوي 2025 - 2026</h1>
 <div class="subjects">
-    <div class="subject" onclick="openPage('arabic.html')"><img src="arabic.png"><div class="subject-name">اللغة العربية</div></div>
-    <div class="subject" onclick="openPage('english.html')"><img src="english.png"><div class="subject-name">اللغة الإنجليزية</div></div>
-    <div class="subject" onclick="openPage('biology.html')"><img src="biology.png"><div class="subject-name">الأحياء</div></div>
-    <div class="subject" onclick="openPage('math.html')"><img src="math.png"><div class="subject-name">الرياضيات</div></div>
-    <div class="subject" onclick="openPage('physics.html')"><img src="physics.png"><div class="subject-name">الفيزياء</div></div>
-    <div class="subject" onclick="openPage('chemistry.html')"><img src="chemistry.png"><div class="subject-name">الكيمياء</div></div>
+    <div class="subject" onclick="openSubject('arabic.html')">
+        <img src="arabic.png" alt="">
+        <div class="subject-name">اللغة العربية</div>
+    </div>
+    <div class="subject" onclick="openSubject('english.html')">
+        <img src="english.png" alt="">
+        <div class="subject-name">اللغة الإنجليزية</div>
+    </div>
+    <div class="subject" onclick="openSubject('biology.html')">
+        <img src="biology.png" alt="">
+        <div class="subject-name">الأحياء</div>
+    </div>
+    <div class="subject" onclick="openSubject('math.html')">
+        <img src="math.png" alt="">
+        <div class="subject-name">الرياضيات</div>
+    </div>
+    <div class="subject" onclick="openSubject('physics.html')">
+        <img src="physics.png" alt="">
+        <div class="subject-name">الفيزياء</div>
+    </div>
+    <div class="subject" onclick="openSubject('chemistry.html')">
+        <img src="chemistry.png" alt="">
+        <div class="subject-name">الكيمياء</div>
+    </div>
 </div>
-
 <div class="subject" onclick="openPage('contact.html')">
   <img src="contact-icon.png" alt="تواصل">
   <div class="subject-name">صفحة تواصل معنا</div>
 </div>
 
-<h2 style="text-align:center;margin-top:30px;color:#ff9800;"> للشكوي والاقتراحات 🔻</h2>
+<h2>للشكوي والاقتراحات 🔻</h2>
 <div class="contact-container">
-    <img src="contact.png" alt="صورة تواصل معنا">
-    <input type="text" id="studentName" readonly>
-    <input type="text" id="studentPhone" readonly>
+    <img src="Contact.png" alt="صورة تواصل معنا">
+    <input type="text" id="studentName" placeholder="الاسم" readonly>
+    <input type="text" id="studentPhone" placeholder="رقم الهاتف" readonly>
     <textarea id="message" rows="5" placeholder="اكتب رسالتك هنا..."></textarea>
     <button onclick="sendMessage()">إرسال</button>
 </div>
 
 <script>
-const BOT_TOKEN = "8444690767:AAENxXF6CV0TozG5fD9Kwc3R6SO4UaLeoa0";
-const CHAT_ID = "7020597309";
+const BOT_TOKEN = "8444690767:AAENxXF6CV0TozG5fD9Kwc3R6SO4UaLeoa0"; // ضع التوكن هنا
+const CHAT_ID = "7020597309"; // ضع ال Chat ID هنا
 
-// جلب البيانات من تسجيل الدخول
-const name = localStorage.getItem("studentName");
-const phone = localStorage.getItem("studentPhone");
-if(!name || !phone){
-    alert("يجب تسجيل الدخول أولاً!");
-    window.location.href="login.html";
-}
-
+// مثال: بيانات الطالب موجودة مسبقًا في localStorage
+const name = localStorage.getItem("studentName") || "الطالب";
+const phone = localStorage.getItem("studentPhone") || "01234567890";
 document.getElementById("studentName").value = name;
 document.getElementById("studentPhone").value = phone;
 document.getElementById("studentInfo").innerText = `مرحبا ${name} | ${phone}`;
 
-// فتح صفحات المواد
-function openPage(page){
+// فتح صفحة المادة
+function openSubject(page){
     window.location.href = page;
 }
 
-// التحقق من رقم مصري صحيح
-function isValidEgyptianNumber(number){
-    return /^(010|011|012|015)[0-9]{8}$/.test(number);
-}
-
-// إرسال الرسالة عبر Telegram
+// إرسال رسالة للبوت
 function sendMessage(){
+    const name = document.getElementById("studentName").value;
+    const phone = document.getElementById("studentPhone").value;
     const msg = document.getElementById("message").value.trim();
-    if(msg === ""){ alert("اكتب رسالتك أولاً"); return;}
-    if(!isValidEgyptianNumber(phone)){ alert("رقم الهاتف غير صحيح"); return;}
+    if(msg===""){ alert("اكتب رسالتك أولاً"); return; }
     const text = `📩 رسالة من صفحة التواصل\n👤 الاسم: ${name}\n📞 الرقم: ${phone}\n💬 الرسالة: ${msg}`;
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`;
-    fetch(url)
-        .then(res=>res.ok?alert("تم إرسال رسالتك ✔"):alert("حدث خطأ ❌"))
-        .catch(err=>alert("حدث خطأ: "+err));
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+    .then(res=>res.ok?alert("تم إرسال رسالتك ✔"):alert("حدث خطأ ❌"))
+    .catch(err=>alert("حدث خطأ: "+err));
     document.getElementById("message").value="";
 }
 </script>
 
-<footer>
-  <p>جميع الحقوق محفوظة لـEG ©</p>
-</footer>
-
 </body>
-  </html>
+    </html>
