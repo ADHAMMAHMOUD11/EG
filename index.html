@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الصفحة الرئيسية</title>
+<style>
+body{font-family:"Poppins",sans-serif;background:#121212;color:white;padding:20px;margin:0;}
+h1{text-align:center;color:#ff9800;margin-bottom:20px;}
+.top-info{text-align:center;margin-bottom:20px;background:#1e1e1e;padding:10px;border-radius:10px;border:1px solid #ff9800;color:#ff9800;}
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;}
+.subject{background:#1e1e1e;padding:15px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid #ff9800;transition:.3s;}
+.subject:hover{transform:scale(1.05);background:#252525;}
+.subject img{width:100%;height:130px;object-fit:cover;border-radius:10px;}
+.subject-name{margin-top:10px;font-size:18px;color:#ff9800;}
+.contact-container{max-width:450px;margin:30px auto;background:#1e1e1e;padding:20px;border-radius:12px;border:1px solid #ff9800;}
+.contact-container img{width:100%;height:180px;object-fit:cover;border-radius:10px;margin-bottom:15px;border:1px solid #ff9800;}
+.contact-container input,.contact-container textarea{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:none;background:#2a2a2a;color:white;}
+.contact-container button{width:100%;background:#ff9800;border:none;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="top-info" id="studentInfo"></div>
+
+<h1>مواد الصف الثالث الثانوي 2025 - 2026</h1>
+<div class="subjects">
+<div class="subject" onclick="alert('صفحة المادة العربية')"><img src="arabic.png"><div class="subject-name">اللغة العربية</div></div>
+<div class="subject" onclick="alert('صفحة المادة الإنجليزية')"><img src="english.png"><div class="subject-name">اللغة الإنجليزية</div></div>
+<div class="subject" onclick="alert('صفحة المادة الأحياء')"><img src="biology.png"><div class="subject-name">الأحياء</div></div>
+<div class="subject" onclick="alert('صفحة المادة الرياضيات')"><img src="math.png"><div class="subject-name">الرياضيات</div></div>
+<div class="subject" onclick="alert('صفحة المادة الفيزياء')"><img src="physics.png"><div class="subject-name">الفيزياء</div></div>
+<div class="subject" onclick="alert('صفحة المادة الكيمياء')"><img src="chemistry.png"><div class="subject-name">الكيمياء</div></div>
+</div>
+
+<h1>📩 تواصل معنا</h1>
+<div class="contact-container">
+<img src="contact.png" alt="صورة تواصل معنا">
+<input type="text" id="studentName" readonly>
+<input type="text" id="studentPhone" readonly>
+<textarea id="message" rows="5" placeholder="اكتب رسالتك هنا..."></textarea>
+<button onclick="sendMessage()">إرسال</button>
+</div>
+
+<script>
+const BOT_TOKEN = "8444690767:AAENxXF6CV0TozG5fD9Kwc3R6SO4UaLeoa0";
+const CHAT_ID = "7020597309";
+
+const name = localStorage.getItem("studentName") || "";
+const phone = localStorage.getItem("studentPhone") || "";
+document.getElementById("studentName").value = name;
+document.getElementById("studentPhone").value = phone;
+document.getElementById("studentInfo").innerText = `مرحبا ${name} | ${phone}`;
+
+function isValidEgyptianNumber(number){return /^(010|011|012|015)[0-9]{8}$/.test(number);}
+
+function sendMessage(){
+  const msg = document.getElementById("message").value.trim();
+  if(msg===""){alert("اكتب رسالتك أولاً");return;}
+  if(!isValidEgyptianNumber(phone)){alert("رقم الهاتف غير صحيح");return;}
+  const text = `📩 رسالة من صفحة التواصل\n👤 الاسم: ${name}\n📞 الرقم: ${phone}\n💬 الرسالة: ${msg}`;
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+  .then(r=>r.ok?alert("تم إرسال رسالتك ✔"):alert("حدث خطأ ❌"))
+  .catch(err=>alert("حدث خطأ: "+err));
+  document.getElementById("message").value="";
+}
+</script>
+
+</body>
+</html>
