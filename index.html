@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الصفحة الرئيسية</title>
+
 <style>
 body {
     font-family: "Tajawal", sans-serif;
@@ -92,81 +93,116 @@ h1, h2 {
     cursor: pointer;
 }
 </style>
+
 </head>
 <body>
 
-<div class="top-info" id="studentInfo">مرحبا بك</div>
+<div class="top-info">مرحبا 👋🏻</div>
 
 <h1>مواد الصف الثالث الثانوي 2025 - 2026</h1>
+
 <div class="subjects">
     <div class="subject" onclick="openSubject('arabic.html')">
         <img src="arabic.png" alt="">
         <div class="subject-name">اللغة العربية</div>
     </div>
+
     <div class="subject" onclick="openSubject('english.html')">
         <img src="english.png" alt="">
         <div class="subject-name">اللغة الإنجليزية</div>
     </div>
+
     <div class="subject" onclick="openSubject('biology.html')">
         <img src="biology.png" alt="">
         <div class="subject-name">الأحياء</div>
     </div>
+
     <div class="subject" onclick="openSubject('math.html')">
         <img src="math.png" alt="">
         <div class="subject-name">الرياضيات</div>
     </div>
+
     <div class="subject" onclick="openSubject('physics.html')">
         <img src="physics.png" alt="">
         <div class="subject-name">الفيزياء</div>
     </div>
+
     <div class="subject" onclick="openSubject('chemistry.html')">
         <img src="chemistry.png" alt="">
         <div class="subject-name">الكيمياء</div>
     </div>
 </div>
-<div class="subject" onclick="openPage('contact.html')">
+
+<br>
+
+<div class="subject" onclick="openSubject('contact.html')" style="margin: 0 auto; width:200px;">
   <img src="contact-icon.png" alt="تواصل">
   <div class="subject-name">صفحة تواصل معنا</div>
 </div>
 
-<h2>للشكوي والاقتراحات 🔻</h2>
+<h2>للشكوى والاقتراحات 🔻</h2>
+
 <div class="contact-container">
     <img src="Contact.png" alt="صورة تواصل معنا">
-    <input type="text" id="studentName" placeholder="الاسم" readonly>
-    <input type="text" id="studentPhone" placeholder="رقم الهاتف" readonly>
+
+    <input type="text" id="studentName" placeholder="اكتب اسمك هنا">
+    <input type="text" id="studentPhone" placeholder="اكتب رقمك المصري هنا">
+    
     <textarea id="message" rows="5" placeholder="اكتب رسالتك هنا..."></textarea>
+    
     <button onclick="sendMessage()">إرسال</button>
 </div>
 
 <script>
-const BOT_TOKEN = "8444690767:AAENxXF6CV0TozG5fD9Kwc3R6SO4UaLeoa0"; // ضع التوكن هنا
-const CHAT_ID = "7020597309"; // ضع ال Chat ID هنا
+const BOT_TOKEN = "8444690767:AAENxXF6CV0TozG5fD9Kwc3R6SO4UaLeoa0";
+const CHAT_ID = "7020597309";
 
-// مثال: بيانات الطالب موجودة مسبقًا في localStorage
-const name = localStorage.getItem("studentName") || "الطالب";
-const phone = localStorage.getItem("studentPhone") || "01234567890";
-document.getElementById("studentName").value = name;
-document.getElementById("studentPhone").value = phone;
-document.getElementById("studentInfo").innerText = `مرحبا ${name} | ${phone}`;
-
-// فتح صفحة المادة
 function openSubject(page){
     window.location.href = page;
 }
 
-// إرسال رسالة للبوت
+function isValidEgyptianNumber(num){
+    return /^(01)[0-2,5][0-9]{8}$/.test(num);
+}
+
 function sendMessage(){
-    const name = document.getElementById("studentName").value;
-    const phone = document.getElementById("studentPhone").value;
+    const name = document.getElementById("studentName").value.trim();
+    const phone = document.getElementById("studentPhone").value.trim();
     const msg = document.getElementById("message").value.trim();
-    if(msg===""){ alert("اكتب رسالتك أولاً"); return; }
-    const text = `📩 رسالة من صفحة التواصل\n👤 الاسم: ${name}\n📞 الرقم: ${phone}\n💬 الرسالة: ${msg}`;
+
+    if(!name || !phone || !msg){
+        alert("❌ من فضلك املأ جميع الحقول");
+        return;
+    }
+
+    if(!isValidEgyptianNumber(phone)){
+        alert("❌ يجب إدخال رقم صحيح مكون من 11 رقم ويبدأ بـ 01");
+        return;
+    }
+
+    const text =
+`📩 رسالة جديدة من الموقع
+👤 الاسم: ${name}
+📞 رقم الهاتف: ${phone}
+💬 الرسالة:
+${msg}`;
+
     fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
-    .then(res=>res.ok?alert("تم إرسال رسالتك ✔"):alert("حدث خطأ ❌"))
-    .catch(err=>alert("حدث خطأ: "+err));
-    document.getElementById("message").value="";
+    .then(res => {
+        if(res.ok){
+            alert("✔ تم إرسال رسالتك بنجاح شكرا لك وسيتم الرد عليك في اقرب وقت");
+            document.getElementById("message").value = "";
+        } else {
+            alert("❌ حدث خطأ، حاول مرة أخرى");
+        }
+    })
+    .catch(err => {
+        alert("⚠ خطأ في الاتصال: " + err);
+    });
 }
 </script>
-
+<footer>
+  <p>جميع الحقوق محفوظة لـEG ©</p>
+</footer>
 </body>
     </html>
