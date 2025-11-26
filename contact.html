@@ -31,6 +31,7 @@ h1,h2 {
 .contact-item {
     display:flex;
     align-items:center;
+    justify-content:flex-start;
     background:#252525;
     padding:15px;
     border-radius:10px;
@@ -40,22 +41,12 @@ h1,h2 {
 }
 .contact-item:hover { background:#333; }
 .contact-item i {
-    font-size:26px;
+    font-size:30px;
     color:#ff9800;
-    margin-left:15px;
+    margin:0 15px;
 }
-.contact-text {
-    font-size:17px;
-    color:white;
-}
-.center-icons {
-    display:flex;
-    justify-content:center;
-    gap:15px;
-}
-.center-icons i {
-    font-size:32px;
-    color:#ff9800;
+.contact-item span {
+    font-size:18px;
 }
 </style>
 </head>
@@ -63,45 +54,47 @@ h1,h2 {
 
 <h1>إذا واجهتك أي مشكلة يرجى التواصل مع الدعم الفني</h1>
 
-EG هي مجموعة تعليمية تقدم الدعم الفني والمساعدة للطلاب ، وتسعى لتسهيل عملية التعلم وتقديم الحلول لأي مشاكل قد تواجهكم.
+<p style="font-size: 14px; line-height: 1.8; text-align: center; color: #ff9800;">
+EG هي مجموعة تعليمية تقدم الدعم الفني والمساعدة للطلاب والمعلمين، 
+وتسعى لتسهيل عملية التعلم وتقديم الحلول لأي مشاكل قد تواجهكم.
 </p>
 
-<!-- دعم فني EG -->
 <div class="section">
     <h2>EG - الدعم الفني</h2>
-    <div class="contact-item center-icons" onclick="window.location.href='tel:+201211773023'">
-        <i class="fa-solid fa-phone"></i>
+
+    <div class="contact-item" 
+         style="justify-content:center;" 
+         onclick="window.open('https://wa.me/201211773023','_blank')">
+
+        <i class="fa-brands fa-whatsapp"></i>
         <i class="fa-solid fa-headset"></i>
+
     </div>
+</div>
 </div>
 
 <h1>للتواصل معنا </h1>
-
 <div class="section">
-
     <div class="contact-item" onclick="window.open('https://wa.me/201101158596','_blank')">
         <i class="fa-brands fa-whatsapp"></i>
-        <span class="contact-text">واتساب</span>
+        <span>واتساب</span>
     </div>
-
     <div class="contact-item" onclick="window.open('https://www.facebook.com/share/1Aa79cxhFn/','_blank')">
         <i class="fa-brands fa-facebook"></i>
-        <span class="contact-text">فيسبوك</span>
+        <span>فيسبوك</span>
     </div>
-
     <div class="contact-item" onclick="window.open('https://t.me/ADHAM20088','_blank')">
         <i class="fa-brands fa-telegram"></i>
-        <span class="contact-text">تليجرام</span>
+        <span>تلجرام</span>
     </div>
-
     <div class="contact-item" onclick="window.open('https://chat.whatsapp.com/E3zbRyYmrBUC4nquffN5wG','_blank')">
         <i class="fa-brands fa-whatsapp"></i>
-        <span class="contact-text">جروب واتساب</span>
+        <span>جروب واتساب</span>
     </div>
-
 </div>
-<footer>
+
+         <footer>
   <p>جميع الحقوق محفوظة لـEG ©2025</p>
-</footer>
+            </footer>
 </body>
-</html>
+ </html>
