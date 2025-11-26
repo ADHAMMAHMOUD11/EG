@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الكيمياء</title>
+<style>
+body { font-family:"Tajawal",sans-serif; background:#121212; color:white; margin:0; padding:20px; }
+h1 { text-align:center; color:#ff9800; margin-bottom:20px; }
+.top-bar { text-align:right; margin-bottom:20px; }
+.top-bar button { padding:10px 20px; background:#ff9800; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
+.books { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; }
+.book { background:#1e1e1e; border:1px solid #ff9800; border-radius:12px; text-align:center; padding:10px; transition:.3s; cursor:pointer; }
+.book:hover { transform:scale(1.05); background:#252525; }
+.book img { width:100%; height:130px; object-fit:cover; border-radius:8px; }
+.book-name { margin-top:10px; font-size:18px; color:#ff9800; }
+.book a { display:block; margin-top:8px; color:#ff9800; text-decoration:none; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <button id="examBtn">امتحاني</button>
+</div>
+
+<h1>الكيمياء - كتب المذاكرة</h1>
+
+<div class="books" id="booksContainer"></div>
+
+<script>
+const pdfFiles = ["chemistry1.pdf","chemistry2.pdf","chemistry3.pdf","chemistry4.pdf","chemistry5.pdf"];
+const container = document.getElementById("booksContainer");
+pdfFiles.forEach(file=>{
+    const div=document.createElement("div");
+    div.classList.add("book");
+    div.innerHTML = `<img src="placeholder.png" alt="صورة الكتاب"><div class="book-name">${file}</div><a href="${file}" target="_blank">فتح / تحميل</a>`;
+    container.appendChild(div);
+});
+document.getElementById("examBtn").addEventListener("click",()=>{ window.location.href="chemistry_exam.html"; });
+</script>
+
+</body>
+</html>
