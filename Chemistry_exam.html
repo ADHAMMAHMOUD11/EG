@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>امتحان الكيمياء</title>
+<style>
+body{font-family:"Tajawal",sans-serif;background:#121212;color:white;padding:20px;}
+h1,h2{text-align:center;color:#ff9800;}
+#examSection{display:none;}
+#otpSection{display:none;}
+#timer{font-size:20px;text-align:center;margin-bottom:15px;color:#ff9800;}
+.question{background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:10px;border:1px solid #ff9800;}
+.question h3{margin-bottom:10px;}
+.question label{display:block;margin-bottom:5px;cursor:pointer;}
+button{background:#ff9800;color:#000;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
+input[type=text]{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;background:#2a2a2a;color:white;}
+</style>
+</head>
+<body>
+
+<h1>امتحان الكيمياء</h1>
+
+<div id="phoneSection">
+    <h2>أدخل رقم هاتفك</h2>
+    <input type="text" id="phone" placeholder="رقم الهاتف 11 رقم">
+    <button onclick="sendOTP()">إرسال OTP</button>
+</div>
+
+<div id="otpSection">
+    <h2>أدخل كود التحقق</h2>
+    <input type="text" id="otpInput" placeholder="كود التحقق">
+    <button onclick="verifyOTP()">تحقق</button>
+</div>
+
+<div id="examSection">
+    <div id="timer">25:00</div>
+    <div id="questionsContainer"></div>
+    <button onclick="submitExam()">تسليم الامتحان</button>
+</div>
+
+<script>
+const BOT_TOKEN ="8182981848:AAFESqf1hVM0JSEvywhXJdk5asGJlOq6q00"; // ضع التوكن هنا
+const CHAT_ID = "7020597309"; // ضع الـ Chat ID هنا
+const examName = "امتحان الكيمياء";
+
+let realOTP = "";
+let phoneNumber = "";
+let startTime = null;
+let timerInterval = null;
+
+// 15 سؤال الكيمياء مع الإجابات الصحيحة
+const questions = [
+    {q:"السؤال 1: ما هو الرمز الكيميائي للماء؟", options:["H2O","CO2","O2","NaCl"], correct:"H2O"},
+    {q:"السؤال 2: ما هو الرقم الذري للهيدروجين؟", options:["1","2","8","6"], correct:"1"},
+    {q:"السؤال 3: ما نوع الرابطة في جزيء NaCl؟", options:["أيونية","تساهمية","فلزية","هيدروجينية"], correct:"أيونية"},
+    {q:"السؤال 4: ما هو PH محلول الحمض؟", options:["أقل من 7","أكثر من 7","يساوي 7","10"], correct:"أقل من 7"},
+    {q:"السؤال 5: العنصر الأكثر وفرة في الكون؟", options:["الهيدروجين","الأكسجين","الكربون","الهيليوم"], correct:"الهيدروجين"},
+    {q:"السؤال 6: صيغة ثاني أكسيد الكربون؟", options:["CO2","CO","O2","C2O"], correct:"CO2"},
+    {q:"السؤال 7: ما هو الغاز الذي لا لون له؟", options:["الأكسجين","النيتروجين","ثاني أكسيد الكربون","الهيليوم"], correct:"الأكسجين"},
+    {q:"السؤال 8: ما هو العنصر الذي يرمز له بـ Fe؟", options:["الحديد","الفلور","الفضة","الفوسفور"], correct:"الحديد"},
+    {q:"السؤال 9: ما نوع التفاعل بين حمض وقاعدة؟", options:["تعادل","أكسدة","اختزال","تفاعل حراري"], correct:"تعادل"},
+    {q:"السؤال 10: ما هو مركب الطباشير؟", options:["CaCO3","NaCl","H2O","C6H12O6"], correct:"CaCO3"},
+    {q:"السؤال 11: ما هو الغاز الذي يستخدم في الإضاءة؟", options:["النيون","الأكسجين","الهيدروجين","الكلور"], correct:"النيون"},
+    {q:"السؤال 12: ما هو الأيون الموجب في الملح؟", options:["Na+","Cl-","O2-","H+"], correct:"Na+"},
+    {q:"السؤال 13: ما نوع التفاعل في احتراق الخشب؟", options:["أكسدة","اختزال","تفاعل حمضي","تعادل"], correct:"أكسدة"},
+    {q:"السؤال 14: ما هو العدد الكتلي للهيليوم؟", options:["4","2","3","1"], correct:"4"},
+    {q:"السؤال 15: ما اسم المركب H2SO4؟", options:["حمض الكبريتيك","حمض النيتريك","الماء","أمونيا"], correct:"حمض الكبريتيك"}
+];
+
+// إرسال OTP
+function sendOTP(){
+    phoneNumber = document.getElementById("phone").value.trim();
+    const regex = /^01[0125][0-9]{8}$/;
+    if(!regex.test(phoneNumber)){ alert("أدخل رقم مصري صحيح"); return; }
+    if(localStorage.getItem(`examDone_${examName}_${phoneNumber}`)){
+        alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
+        return;
+    }
+    realOTP = Math.floor(1000 + Math.random()*9000).toString();
+    document.getElementById("phoneSection").style.display="none";
+    document.getElementById("otpSection").style.display="block";
+
+    const text = `📌 OTP جديد\nرقم الهاتف: ${phoneNumber}\nالكود: ${realOTP}\nالامتحان: ${examName}`;
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`);
+}
+
+// تحقق OTP
+function verifyOTP(){
+    const otpInput = document.getElementById("otpInput").value.trim();
+    if(otpInput===realOTP){
+        document.getElementById("otpSection").style.display="none";
+        startExam();
+    } else alert("كود غير صحيح");
+}
+
+// بدء الامتحان
+function startExam(){
+    document.getElementById("examSection").style.display="block";
+    startTime = new Date();
+
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+    questions.forEach((q,i)=>{
+        let html = `<div class="question"><h3>${q.q}</h3>`;
+        q.options.forEach(opt=>{
+            html+=`<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`;
+        });
+        html+="</div>";
+        container.innerHTML+=html;
+    });
+
+    startTimer(25*60);
+}
+
+// العداد
+function startTimer(seconds){
+    const timerEl = document.getElementById("timer");
+    let remaining = seconds;
+    timerInterval = setInterval(()=>{
+        let min = Math.floor(remaining/60);
+        let sec = remaining%60;
+        timerEl.innerText = `${min.toString().padStart(2,"0")}:${sec.toString().padStart(2,"0")}`;
+        if(remaining<=0){ clearInterval(timerInterval); submitExam(); }
+        remaining--;
+    },1000);
+}
+
+// تسليم الامتحان
+function submitExam(){
+    clearInterval(timerInterval);
+    const answers = questions.map((q,i)=>{
+        const radios = document.getElementsByName(`q${i}`);
+        const selected = Array.from(radios).find(r=>r.checked);
+        return selected ? selected.value : "لم يحدد";
+    });
+
+    const detailedResults = questions.map((q,i)=>{
+        const ans = answers[i];
+        const status = ans===q.correct ? "صحيح" : `خطأ (الصحيح: ${q.correct})`;
+        return `السؤال ${i+1}: اخترت ${ans} | ${status}`;
+    }).join("\n");
+
+    const endTime = new Date();
+    const duration = Math.floor((endTime-startTime)/1000/60);
+    const text = `📝 نتيجة امتحان\nالامتحان: ${examName}\nرقم الهاتف: ${phoneNumber}\nالمدة: ${duration} دقيقة\nالتفاصيل:\n${detailedResults}`;
+    
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+    .then(()=>alert("تم إرسال الامتحان بنجاح"))
+    .catch(err=>alert("حدث خطأ في الإرسال"));
+
+    localStorage.setItem(`examDone_${examName}_${phoneNumber}`, "true");
+    document.getElementById("examSection").innerHTML="<h2>شكراً لإتمام الامتحان</h2>";
+}
+
+// منع إعادة الدخول
+window.onload = ()=>{
+    const inputPhone = document.getElementById("phone");
+    inputPhone.addEventListener("input", ()=>{
+        const val = inputPhone.value.trim();
+        if(localStorage.getItem(`examDone_${examName}_${val}`)){
+            alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
+            inputPhone.value = "";
+        }
+    });
+};
+</script>
+
+</body>
+</html>

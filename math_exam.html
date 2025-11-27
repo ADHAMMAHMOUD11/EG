@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>امتحان الرياضيات</title>
+<style>
+body{font-family:"Tajawal",sans-serif;background:#121212;color:white;padding:20px;}
+h1,h2{text-align:center;color:#ff9800;}
+#examSection{display:none;}
+#otpSection{display:none;}
+#timer{font-size:20px;text-align:center;margin-bottom:15px;color:#ff9800;}
+.question{background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:10px;border:1px solid #ff9800;}
+.question h3{margin-bottom:10px;}
+.question label{display:block;margin-bottom:5px;cursor:pointer;}
+button{background:#ff9800;color:#000;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
+input[type=text]{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;background:#2a2a2a;color:white;}
+</style>
+</head>
+<body>
+
+<h1>امتحان الرياضيات</h1>
+
+<div id="phoneSection">
+    <h2>أدخل رقم هاتفك</h2>
+    <input type="text" id="phone" placeholder="رقم الهاتف 11 رقم">
+    <button onclick="sendOTP()">إرسال OTP</button>
+</div>
+
+<div id="otpSection">
+    <h2>أدخل كود التحقق</h2>
+    <input type="text" id="otpInput" placeholder="كود التحقق">
+    <button onclick="verifyOTP()">تحقق</button>
+</div>
+
+<div id="examSection">
+    <div id="timer">25:00</div>
+    <div id="questionsContainer"></div>
+    <button onclick="submitExam()">تسليم الامتحان</button>
+</div>
+
+<script>
+const BOT_TOKEN ="8182981848:AAFESqf1hVM0JSEvywhXJdk5asGJlOq6q00"; // ضع التوكن هنا
+const CHAT_ID = "7020597309"; // ضع الـ Chat ID هنا
+const examName = "امتحان الرياضيات";
+
+let realOTP = "";
+let phoneNumber = "";
+let startTime = null;
+let timerInterval = null;
+
+// 15 سؤال مثال مع إجابات صحيحة
+const questions = Array.from({length:15},(_,i)=>({
+    q:`السؤال ${i+1}؟`,
+    options:["أ","ب","ج","د"],
+    correct: "أ" // كل الإجابات الصحيحة افتراضياً "أ"
+}));
+
+// إرسال OTP
+function sendOTP(){
+    phoneNumber = document.getElementById("phone").value.trim();
+    const regex = /^01[0125][0-9]{8}$/;
+    if(!regex.test(phoneNumber)){ alert("أدخل رقم مصري صحيح"); return; }
+    if(localStorage.getItem(`examDone_${examName}_${phoneNumber}`)){
+        alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
+        return;
+    }
+    realOTP = Math.floor(1000 + Math.random()*9000).toString();
+    document.getElementById("phoneSection").style.display="none";
+    document.getElementById("otpSection").style.display="block";
+
+    // إرسال OTP للبوت
+    const text = `📌 OTP جديد\nرقم الهاتف: ${phoneNumber}\nالكود: ${realOTP}\nالامتحان: ${examName}`;
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+    .catch(err=>console.error(err));
+}
+
+// تحقق OTP
+function verifyOTP(){
+    const otpInput = document.getElementById("otpInput").value.trim();
+    if(otpInput===realOTP){
+        document.getElementById("otpSection").style.display="none";
+        startExam();
+    } else alert("كود غير صحيح");
+}
+
+// بدء الامتحان
+function startExam(){
+    document.getElementById("examSection").style.display="block";
+    startTime = new Date();
+
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+    questions.forEach((q,i)=>{
+        let html = `<div class="question"><h3>${q.q}</h3>`;
+        q.options.forEach(opt=>{
+            html+=`<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`;
+        });
+        html+="</div>";
+        container.innerHTML+=html;
+    });
+
+    startTimer(25*60); // 25 دقيقة
+}
+
+// العداد
+function startTimer(seconds){
+    const timerEl = document.getElementById("timer");
+    let remaining = seconds;
+    timerInterval = setInterval(()=>{
+        let min = Math.floor(remaining/60);
+        let sec = remaining%60;
+        timerEl.innerText = `${min.toString().padStart(2,"0")}:${sec.toString().padStart(2,"0")}`;
+        if(remaining<=0){ clearInterval(timerInterval); submitExam(); }
+        remaining--;
+    },1000);
+}
+
+// تسليم الامتحان
+function submitExam(){
+    clearInterval(timerInterval);
+    const answers = questions.map((q,i)=>{
+        const radios = document.getElementsByName(`q${i}`);
+        const selected = Array.from(radios).find(r=>r.checked);
+        return selected ? selected.value : "لم يحدد";
+    });
+
+    // حساب النتيجة والتفاصيل
+    const detailedResults = questions.map((q,i)=>{
+        const ans = answers[i];
+        return `السؤال ${i+1}: اخترت ${ans} | الصحيح: ${q.correct}`;
+    }).join("\n");
+
+    const endTime = new Date();
+    const duration = Math.floor((endTime-startTime)/1000/60); // دقائق
+    const text = `📝 نتيجة امتحان\nالامتحان: ${examName}\nرقم الهاتف: ${phoneNumber}\nالمدة: ${duration} دقيقة\nالتفاصيل:\n${detailedResults}`;
+    
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
+    .then(()=>alert("تم إرسال الامتحان بنجاح"))
+    .catch(err=>alert("حدث خطأ في الإرسال"));
+
+    // منع إعادة الدخول
+    localStorage.setItem(`examDone_${examName}_${phoneNumber}`, "true");
+    document.getElementById("examSection").innerHTML="<h2>شكراً لإتمام الامتحان</h2>";
+}
+
+// منع الدخول إذا أتم الامتحان
+window.onload = ()=>{
+    const inputPhone = document.getElementById("phone");
+    inputPhone.addEventListener("input", ()=>{
+        const val = inputPhone.value.trim();
+        if(localStorage.getItem(`examDone_${examName}_${val}`)){
+            alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
+            inputPhone.value = "";
+        }
+    });
+};
+</script>
+
+</body>
+</html>
