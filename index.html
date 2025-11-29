@@ -96,7 +96,7 @@ h1, h2 {
 
 </head>
 <body>
-<!-- مربع الساعة -->
+    <!-- مربع الساعة 12 ساعة -->
 <div id="realClock" style="
     font-family: Arial, sans-serif;
     font-size: 20px;
@@ -108,7 +108,7 @@ h1, h2 {
     display: inline-block;
     box-shadow: 0 0 8px #ff6f00;
 ">
-00:00:00
+00:00 AM
 </div>
 
 <script>
@@ -118,17 +118,24 @@ function updateRealClock() {
     let minutes = now.getMinutes();
     let seconds = now.getSeconds();
 
+    // تحويل نظام 24 ساعة إلى 12 ساعة
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // إذا كانت الساعة 0 تصبح 12
+
+    // إضافة صفر للأرقام الأقل من 10
     hours = hours < 10 ? '0' + hours : hours;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
 
-    document.getElementById('realClock').textContent = hours + ':' + minutes + ':' + seconds;
+    document.getElementById('realClock').textContent = hours + ':' + minutes + ' ' + ampm;
 }
 
 // تحديث الساعة كل ثانية
 setInterval(updateRealClock, 1000);
 updateRealClock(); // تحديث مباشر عند تحميل الصفحة
 </script>
+    
 <div class="top-info">مرحبا 👋🏻</div>
 
 <h1>مواد الصف الثالث الثانوي 2025 - 2026</h1>
