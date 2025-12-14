@@ -3,171 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>امتحان الأحياء</title>
+<title>امتحان الفيزياء</title>
+
 <style>
-body{font-family:"Tajawal",sans-serif;background:#121212;color:white;padding:20px;}
-h1,h2{text-align:center;color:#ff9800;}
-#examSection{display:none;}
-#otpSection{display:none;}
-#timer{font-size:20px;text-align:center;margin-bottom:15px;color:#ff9800;}
-.question{background:#1e1e1e;padding:15px;border-radius:10px;margin-bottom:10px;border:1px solid #ff9800;}
-.question h3{margin-bottom:10px;}
-.question label{display:block;margin-bottom:5px;cursor:pointer;}
-button{background:#ff9800;color:#000;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
-input[type=text]{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:none;background:#2a2a2a;color:white;}
+body{
+    font-family:Tajawal,sans-serif;
+    background:#121212;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+h1,h2{color:#ff9800}
+
+#examSection,#otpSection{display:none}
+#timer{font-size:24px;color:#ff9800;margin-bottom:20px}
+
+.question{
+    background:#1e1e1e;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:18px;
+    border:1px solid #ff9800;
+}
+
+.question img{
+    width:100%;
+    max-width:1280px;
+    height:450px;
+    object-fit:cover;
+    border-radius:10px;
+    margin:15px auto;
+    display:block;
+}
+
+label{
+    display:block;
+    margin:8px 0;
+    padding:10px;
+    border:1px solid #ff9800;
+    border-radius:25px;
+    cursor:pointer;
+}
+input[type=radio]{display:none}
+input[type=radio]:checked + span{
+    background:#ff9800;
+    color:#000;
+    padding:10px 20px;
+    border-radius:25px;
+}
+
+button{
+    padding:15px 35px;
+    border-radius:50px;
+    background:#ff9800;
+    border:none;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+input{
+    width:90%;
+    max-width:400px;
+    padding:15px;
+    margin-bottom:20px;
+    border-radius:30px;
+    border:none;
+    text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-<h1>امتحان الأحياء</h1>
+<h1>امتحان الفيزياء</h1>
 
 <div id="phoneSection">
-    <h2>أدخل رقم هاتفك</h2>
-    <input type="text" id="phone" placeholder="رقم الهاتف 11 رقم">
-    <button onclick="sendOTP()">إرسال OTP</button>
+<h2>أدخل رقم هاتفك</h2>
+<input id="phone" placeholder="رقم الهاتف">
+<br>
+<button onclick="sendOTP()">إرسال OTP</button>
 </div>
 
 <div id="otpSection">
-    <h2>أدخل كود التحقق</h2>
-    <input type="text" id="otpInput" placeholder="كود التحقق">
-    <button onclick="verifyOTP()">تحقق</button>
+<h2>أدخل كود التحقق</h2>
+<input id="otpInput" placeholder="كود التحقق">
+<br>
+<button onclick="verifyOTP()">تحقق</button>
 </div>
 
 <div id="examSection">
-    <div id="timer">25:00</div>
-    <div id="questionsContainer"></div>
-    <button onclick="submitExam()">تسليم الامتحان</button>
+<div id="timer">17:00</div>
+<div id="questionsContainer"></div>
+<button onclick="submitExam()">تسليم الامتحان</button>
 </div>
 
 <script>
-const BOT_TOKEN ="8182981848:AAFESqf1hVM0JSEvywhXJdk5asGJlOq6q00"; // ضع التوكن هنا
-const CHAT_ID = "7020597309"; // ضع الـ Chat ID هنا
-const examName = "امتحان الأحياء";
+const BOT_TOKEN="8182981848:AAFESqf1hVM0JSEvywhXJdk5asGJlOq6q00";
+const CHAT_ID="7020597309";
+const WHATSAPP_NUMBER="201102323525";
+const REDIRECT_URL="https://adhammahmoud11.github.io/EG1/";
+const examName="امتحان الفيزياء";
 
-let realOTP = "";
-let phoneNumber = "";
-let startTime = null;
-let timerInterval = null;
+let realOTP="", phoneNumber="", startTime, timerInterval;
 
-// 15 سؤال للأحياء مع إجابات صحيحة
-const questions = [
-    {q:"ما هو الوحدة الأساسية للحياة؟", options:["خلية","جزيء","عضو","نسيج"], correct:"خلية"},
-    {q:"أي من التالي عضو في الجهاز التنفسي؟", options:["رئة","قلب","معدة","كبد"], correct:"رئة"},
-    {q:"ما هو دور الميتوكوندريا؟", options:["إنتاج الطاقة","تخزين الماء","إنتاج البروتين","تنظيم الحرارة"], correct:"إنتاج الطاقة"},
-    {q:"أي من التالي حمض نووي؟", options:["DNA","RNA","ATP","ADP"], correct:"DNA"},
-    {q:"ما وظيفة الأوعية الدموية؟", options:["نقل الدم","نقل الأعصاب","نقل الأكسجين فقط","تخزين الطاقة"], correct:"نقل الدم"},
-    {q:"أي من التالي يعتبر بروتين؟", options:["إنزيم","سكريات","دهون","أحماض نووية"], correct:"إنزيم"},
-    {q:"أي من التالي نوع من الأنسجة؟", options:["عضلي","عصبي","دهني","جميع ما سبق"], correct:"جميع ما سبق"},
-    {q:"ما هو دور الكلوروفيل؟", options:["امتصاص الضوء","تنظيم الحرارة","تخزين الماء","نقل الأكسجين"], correct:"امتصاص الضوء"},
-    {q:"أي مما يلي ينتمي للمملكة الحيوانية؟", options:["إنسان","شجرة","فطر","بكتيريا"], correct:"إنسان"},
-    {q:"ما هو الجهاز المسؤول عن الهضم؟", options:["معدة","رئة","كبد","كلى"], correct:"معدة"},
-    {q:"أي من التالي يعمل على الدفاع عن الجسم؟", options:["جهاز المناعة","الجهاز الهضمي","الجهاز العصبي","الجهاز الدوري"], correct:"جهاز المناعة"},
-    {q:"ما هو دور الكلى؟", options:["تنقية الدم","إنتاج الأنسولين","تنظيم الأعصاب","تنظيم الحرارة"], correct:"تنقية الدم"},
-    {q:"أي من التالي يعد ناقل عصبي؟", options:["دوبامين","أنزيم","هيموغلوبين","ATP"], correct:"دوبامين"},
-    {q:"أي من التالي يحوي DNA؟", options:["نواة الخلية","الميتوكوندريا","الريبوسوم","العضو"], correct:"نواة الخلية"},
-    {q:"ما هو الطور الذي يحدث فيه الانقسام الخلوي؟", options:["الميتوز","الميتوسيس","الانقسام الميوزي","الانقسام العشوائي"], correct:"الميتوز"}
+const questions=[
+{q:"(1): الشكل (2) يمثل دائرة كهربية تستخدم لتعيين مقاومة موصل معدني. أي الخطوط البيانية X , Y , Z , K في الشكل(2) يوضح العلاقة بين قيمة مقاومة الموصل وقراءة الأميتر؟", img:"p1.png", options:["X","Y","Z","K"], correct:"Y"},
+{q:"(2): في الشكل المقابل: أي الأشكال البيانية الآتية تمثل العلاقة بين شدة التيار المار في المقاومة R وزمن مروره؟", img:"p2.png", options:["الشكل (1)","الشكل (2)","الشكل (3)"], correct:"الشكل (1)"},
+{q:"(3): الشكل المقابل يمثل العلاقة البيانية بين المقاومة (R) ومقلوب مساحة المقطع (1/A) لموصلين (1) و(2) كلٌ على حدة. فإذا كانت النسبة بين طوليْهما (ℓ₁ / ℓ₂ = √3 / 2)، فإن النسبة بين قيم المقاومية النوعية لمادتي الموصلين (ρe₁ / ρe₂) هي:", img:"p3.png", options:["2 / 1","2 / 3","1 / √2","1 / √3"], correct:"2 / 1"},
+{q:"(4): في تجربة لإثبات صحة قانون أوم، كان الشكل (1) يمثل دائرة كهربية مغلقة، وكان الشكل (2) يمثل العلاقة البيانية بين فرق الجهد (V) بين طرفي المقاومة (R) وشدة التيار (I) المار بها. فإن الاختيار الذي لا يمثل قراءة الأميتر والفولتميتر على الترتيب في الدائرة الكهربية عند أي لحظة هو:", img:"p4.png", options:["4V , 1A","0.8V, 0.2A","1.2V, 0.3A","3.2V, 0.6A"], correct:"3.2V, 0.6A"},
+{q:"(5): الشكل المقابل يمثل موصلين معدنيين (X) و(Y) منتظمي المقطع، معلوم على كلٍ منهما طوله ونصف قطر مقطعه. إذا كانت العلاقة بين مقاومتي السلكين (Rₓ = 2 Rᵧ)، فإن النسبة المقاومية النوعية لمادة الموصل (X) / المقاومية النوعية لمادة الموصل (Y) تساوي:", img:"p5.png", options:["8 / 3","4 / 3","3 / 2","2 / 3"], correct:"8 / 3"},
+{q:"(6): سلكان (1) و(2) مصنوعان من نفس المادة. طول السلك (1) يساوي( 3ℓ) ونصف قطره r، بينما طول السلك  يساوي( 2ℓ) ونصف قطره 2r كما هو موضح بالشكل، فإن النسبة بين (I₁ / I₂) تساوي:", img:"p6.png", options:["12 / 1","1 / 12","3 / 2","1 / 6"], correct:"1 / 12"},
+{q:"(7): مثلت بيانياً العلاقة بين المقاومة الكهربية (R) ومقلوب مساحة المقطع (1/A) لكل سلك من ثلاثة أسلاك منتظمة المقطع (X , Y , Z) من مواد مختلفة، ونفس الطول كل على حدة فإن العلاقه بين قيم المقاومه النوعية Pₑ لمواد الاسلاك الثلاثه تكون:", img:"p7.png", options:["ρₑx = ρₑy = ρₑz","ρₑx > ρₑy > ρₑz","ρₑz > ρₑy > ρₑx","ρₑy > ρₑx > ρₑz"], correct:"ρₑx > ρₑy > ρₑz"},
+{q:"(8): إذا قل طوله للنصف وزادت مساحة مقطعه للضعف فإن مقاومته النوعية:", options:["تقل للربع","تزداد 4 أمثالها","لا تتغير","تزداد للضعف"], correct:"لا تتغير"},
+{q:"(9): الشكل البياني يعبر عن العلاقة بين متغيرين، فإن الشكل الذي يعبر عن العلاقة بين المقاومة النوعية لموصل ونصف قطره هو:", img:"p9.png", options:["الشكل (1)","الشكل (2)","الشكل (3)","الشكل (4)"], correct:"الشكل (3)"},
+{q:"(10): الشكل المقابل يمثل العلاقة البيانية بين المقاومة الكهربية (R) والطول (ℓ) لكلٍ على حدة لثلاثة أسلاك موصلة للتيار الكهربي (X , Y , Z)، فإذا علمت أن قيم مساحة مقطع كل من الأسلاك الثلاثة هي (A ، 2A ، 2A) على الترتيب، تكون العلاقة بين قيم المقاومة النوعية لمادة الأسلاك هي:", img:"p10.png", options:["ρₑx > ρₑy > ρₑz","ρₑx < ρₑy < ρₑz","ρₑx > ρₑy = ρₑz","ρₑz > ρₑx > ρₑy"], correct:"ρₑx > ρₑy > ρₑz"}
 ];
 
-// إرسال OTP
 function sendOTP(){
-    phoneNumber = document.getElementById("phone").value.trim();
-    const regex = /^01[0125][0-9]{8}$/;
-    if(!regex.test(phoneNumber)){ alert("أدخل رقم مصري صحيح"); return; }
-    if(localStorage.getItem(`examDone_${examName}_${phoneNumber}`)){
-        alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
-        return;
-    }
-    realOTP = Math.floor(1000 + Math.random()*9000).toString();
-    document.getElementById("phoneSection").style.display="none";
-    document.getElementById("otpSection").style.display="block";
-
-    // إرسال OTP للبوت
-    const text = `📌 OTP جديد\nرقم الهاتف: ${phoneNumber}\nالكود: ${realOTP}\nالامتحان: ${examName}`;
-    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
-    .catch(err=>console.error(err));
+phoneNumber=phone.value.trim();
+if(!/^01[0125][0-9]{8}$/.test(phoneNumber)) return alert("رقم غير صحيح");
+realOTP=Math.floor(1000+Math.random()*9000)+"";
+phoneSection.style.display="none";
+otpSection.style.display="block";
+fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(
+`OTP\n${phoneNumber}\n${realOTP}\n${examName}`
+)}`);
 }
 
-// تحقق OTP
 function verifyOTP(){
-    const otpInput = document.getElementById("otpInput").value.trim();
-    if(otpInput===realOTP){
-        document.getElementById("otpSection").style.display="none";
-        startExam();
-    } else alert("كود غير صحيح");
+if(otpInput.value.trim()===realOTP){
+otpSection.style.display="none";
+startExam();
+}else alert("كود خطأ");
 }
 
-// بدء الامتحان
 function startExam(){
-    document.getElementById("examSection").style.display="block";
-    startTime = new Date();
-
-    const container = document.getElementById("questionsContainer");
-    container.innerHTML = "";
-    questions.forEach((q,i)=>{
-        let html = `<div class="question"><h3>${q.q}</h3>`;
-        q.options.forEach(opt=>{
-            html+=`<label><input type="radio" name="q${i}" value="${opt}"> ${opt}</label>`;
-        });
-        html+="</div>";
-        container.innerHTML+=html;
-    });
-
-    startTimer(25*60); // 25 دقيقة
+examSection.style.display="block";
+startTime=new Date();
+questionsContainer.innerHTML="";
+questions.forEach((q,i)=>{
+let h=`<div class="question"><h3>${q.q}</h3>`;
+if(q.img) h+=`<img src="${q.img}">`;
+q.options.forEach(o=>{
+h+=`<label><input type="radio" name="q${i}" value="${o}"><span>${o}</span></label>`;
+});
+h+="</div>";
+questionsContainer.innerHTML+=h;
+});
+startTimer(17*60); // 17 دقيقة
 }
 
-// العداد
-function startTimer(seconds){
-    const timerEl = document.getElementById("timer");
-    let remaining = seconds;
-    timerInterval = setInterval(()=>{
-        let min = Math.floor(remaining/60);
-        let sec = remaining%60;
-        timerEl.innerText = `${min.toString().padStart(2,"0")}:${sec.toString().padStart(2,"0")}`;
-        if(remaining<=0){ clearInterval(timerInterval); submitExam(); }
-        remaining--;
-    },1000);
+function startTimer(s){
+let r=s;
+timerInterval=setInterval(()=>{
+timer.innerText=
+String(Math.floor(r/60)).padStart(2,"0")+":"+
+String(r%60).padStart(2,"0");
+if(r--<=0){clearInterval(timerInterval);submitExam();}
+},1000);
 }
 
-// تسليم الامتحان
 function submitExam(){
-    clearInterval(timerInterval);
-    const answers = questions.map((q,i)=>{
-        const radios = document.getElementsByName(`q${i}`);
-        const selected = Array.from(radios).find(r=>r.checked);
-        return selected ? selected.value : "لم يحدد";
-    });
+clearInterval(timerInterval);
+let score=0;
+questions.forEach((q,i)=>{
+const sel=[...document.getElementsByName("q"+i)].find(r=>r.checked);
+if(sel && sel.value===q.correct) score++;
+});
+const percent=Math.round(score/questions.length*100);
 
-    // حساب النتيجة والتفاصيل
-    const detailedResults = questions.map((q,i)=>{
-        const ans = answers[i];
-        const status = ans===q.correct ? "صحيح" : `خطأ (الصحيح: ${q.correct})`;
-        return `السؤال ${i+1}: اخترت ${ans} | ${status}`;
-    }).join("\n");
-
-    const endTime = new Date();
-    const duration = Math.floor((endTime-startTime)/1000/60); // دقائق
-    const text = `📝 نتيجة امتحان\nالامتحان: ${examName}\nرقم الهاتف: ${phoneNumber}\nالمدة: ${duration} دقيقة\nالتفاصيل:\n${detailedResults}`;
-    
-    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`)
-    .then(()=>alert("تم إرسال الامتحان بنجاح"))
-    .catch(err=>alert("حدث خطأ في الإرسال"));
-
-    // منع إعادة الدخول
-    localStorage.setItem(`examDone_${examName}_${phoneNumber}`, "true");
-    document.getElementById("examSection").innerHTML="<h2>شكراً لإتمام الامتحان</h2>";
+if(percent===100){
+window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+"أخيراً خلصت امتحانات ونجحت، الحمد لله رب العالمين 🎉🎓"
+)}`;
+}else{
+window.location.href=REDIRECT_URL;
 }
-
-// منع الدخول إذا أتم الامتحان
-window.onload = ()=>{
-    const inputPhone = document.getElementById("phone");
-    inputPhone.addEventListener("input", ()=>{
-        const val = inputPhone.value.trim();
-        if(localStorage.getItem(`examDone_${examName}_${val}`)){
-            alert("لقد أكملت هذا الامتحان مسبقاً، لا يمكنك الدخول مرة أخرى.");
-            inputPhone.value = "";
-        }
-    });
-};
+}
 </script>
 
 </body>
