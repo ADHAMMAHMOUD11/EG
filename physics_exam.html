@@ -37,7 +37,6 @@ h1,h2{color:#ff9800}
     cursor:pointer;
 }
 
-/* نافذة عرض الصورة كاملة */
 #imgModal{
     display:none;
     position:fixed;
@@ -125,7 +124,6 @@ input{
 <button onclick="submitExam()">تسليم الامتحان</button>
 </div>
 
-<!-- نافذة عرض الصورة كاملة -->
 <div id="imgModal">
     <span onclick="closeModal()">&times;</span>
     <img id="modalImg" src="">
@@ -139,7 +137,7 @@ const REDIRECT_URL="https://adhammahmoud11.github.io/EG1/";
 const examName="امتحان الفيزياء";
 
 let realOTP="", phoneNumber="", startTime, timerInterval;
-let examStarted = false; // لتحديد اذا بدأ الامتحان
+let examStarted = false;
 
 const questions=[
 {q:"(1): الشكل (2) يمثل دائرة كهربية تستخدم لتعيين مقاومة موصل معدني. أي الخطوط البيانية X , Y , Z , K في الشكل(2) يوضح العلاقة بين قيمة مقاومة الموصل وقراءة الأميتر؟", img:"p1.png", options:["X","Y","Z","K"], correct:"Y"},
@@ -161,7 +159,7 @@ function sendOTP(){
   phoneSection.style.display = "none";
   otpSection.style.display = "block";
   fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(
-    `OTP\n${phoneNumber}\n${realOTP}\n${examName}`
+    `تم إرسال OTP للطالب: ${phoneNumber}\nرمز التحقق: ${realOTP}`
   )}`);
 }
 
@@ -174,7 +172,7 @@ function verifyOTP(){
 
 function startExam(){
   examSection.style.display = "block";
-  examStarted = true; // بدأ الامتحان
+  examStarted = true;
   startTime = new Date();
   questionsContainer.innerHTML = "";
   questions.forEach((q,i)=>{
@@ -186,10 +184,9 @@ function startExam(){
     h += "</div>";
     questionsContainer.innerHTML += h;
   });
-  startTimer(17*60); // 17 دقيقة
+  startTimer(17*60);
 }
 
-// منع الخروج أثناء الامتحان
 window.addEventListener("beforeunload", function (e) {
   if(examStarted){
     e.preventDefault();
@@ -216,13 +213,40 @@ function closeModal(){
 
 function submitExam(){
   clearInterval(timerInterval);
-  examStarted = false; // انتهاء الامتحان
+  examStarted = false;
+  const endTime = new Date();
   let score = 0;
+  let answersReport = "";
+
   questions.forEach((q,i)=>{
     const sel = [...document.getElementsByName("q"+i)].find(r=>r.checked);
-    if(sel && sel.value === q.correct) score++;
+    const chosen = sel ? sel.value : "لم يختار";
+    let correctMark = "";
+    if(chosen === q.correct) {
+      score++;
+      correctMark = "✅";
+    } else {
+      correctMark = `❌ (الصحيح: ${q.correct})`;
+    }
+    answersReport += `${i+1}. ${q.q}\nإجابة الطالب: ${chosen} ${correctMark}\n\n`;
   });
+
   const percent = Math.round(score/questions.length*100);
+
+  const message = `
+امتحان: ${examName}
+رقم الطالب: ${phoneNumber}
+بدأ الامتحان: ${startTime.toLocaleString()}
+سلم الامتحان: ${endTime.toLocaleString()}
+الدرجة: ${score}/${questions.length} (${percent}%)
+
+تفاصيل الإجابات:
+${answersReport}
+
+جميع الحقوق محفوظة لـ EG©
+  `;
+
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`);
 
   if(percent === 100){
     window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
@@ -233,6 +257,6 @@ function submitExam(){
   }
 }
 </script>
-<footer>جميع الحقوق محفوظة لـ EG©</foote
+
 </body>
-    </html>
+                                         </html>
