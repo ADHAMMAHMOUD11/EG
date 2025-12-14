@@ -34,8 +34,35 @@ h1,h2{color:#ff9800}
     border-radius:10px;
     margin:15px auto;
     display:block;
+    cursor:pointer;
 }
 
+/* نافذة عرض الصورة كاملة */
+#imgModal{
+    display:none;
+    position:fixed;
+    z-index:999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.9);
+    justify-content:center;
+    align-items:center;
+}
+#imgModal img{
+    max-width:90%;
+    max-height:90%;
+    border-radius:10px;
+}
+#imgModal span{
+    position:absolute;
+    top:20px;
+    right:30px;
+    color:white;
+    font-size:40px;
+    cursor:pointer;
+}
 label{
     display:block;
     margin:8px 0;
@@ -98,6 +125,12 @@ input{
 <button onclick="submitExam()">تسليم الامتحان</button>
 </div>
 
+<!-- نافذة عرض الصورة كاملة -->
+<div id="imgModal">
+    <span onclick="closeModal()">&times;</span>
+    <img id="modalImg" src="">
+</div>
+
 <script>
 const BOT_TOKEN="8182981848:AAFESqf1hVM0JSEvywhXJdk5asGJlOq6q00";
 const CHAT_ID="7020597309";
@@ -144,7 +177,7 @@ startTime=new Date();
 questionsContainer.innerHTML="";
 questions.forEach((q,i)=>{
 let h=`<div class="question"><h3>${q.q}</h3>`;
-if(q.img) h+=`<img src="${q.img}">`;
+if(q.img) h+=`<img src="${q.img}" onclick="openModal(this)">`;
 q.options.forEach(o=>{
 h+=`<label><input type="radio" name="q${i}" value="${o}"><span>${o}</span></label>`;
 });
@@ -154,6 +187,7 @@ questionsContainer.innerHTML+=h;
 startTimer(17*60); // 17 دقيقة
 }
 
+// العداد
 function startTimer(s){
 let r=s;
 timerInterval=setInterval(()=>{
@@ -162,6 +196,15 @@ String(Math.floor(r/60)).padStart(2,"0")+":"+
 String(r%60).padStart(2,"0");
 if(r--<=0){clearInterval(timerInterval);submitExam();}
 },1000);
+}
+
+// فتح نافذة الصورة
+function openModal(img){
+document.getElementById("modalImg").src=img.src;
+document.getElementById("imgModal").style.display="flex";
+}
+function closeModal(){
+document.getElementById("imgModal").style.display="none";
 }
 
 function submitExam(){
